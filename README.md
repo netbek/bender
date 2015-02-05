@@ -4,6 +4,14 @@ Responsive design tester
 
 ## Installation
 
+`npm install -g grunt-cli`
+
+`npm install -g bower`
+
+`npm install`
+
+`bower install`
+
 Create `config.js`
 
 ```javascript
@@ -20,3 +28,7 @@ var benderConfig = {
 	]
 };
 ```
+
+## Usage
+
+Open `index.html` in web browser
