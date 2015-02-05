@@ -4,11 +4,11 @@ Responsive design tester
 
 ## Installation
 
-`npm install -g grunt-cli`
+Install bower:
 
 `npm install -g bower`
 
-`npm install`
+Install dependencies:
 
 `bower install`
 
@@ -32,3 +32,15 @@ var benderConfig = {
 ## Usage
 
 Open `index.html` in web browser
+
+## Building from source
+
+Install grunt and other dependencies:
+
+`npm install -g grunt-cli`
+
+`npm install`
+
+Run grunt to build:
+
+`grunt`
