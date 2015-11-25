@@ -23,7 +23,7 @@
 	"dependencies": {
 		"jquery": "~2.1.3",
 		"jquery-hoverIntent": "~1.8.1",
-		"modernizr": "http://modernizr.com/downloads/modernizr-latest.js",
+		"modernizr": "https://modernizr.com/download?setclasses",
 		"nb-foundation": "https://github.com/netbek/nb-foundation.git#master",
 		"respond": "1.4.2",
 		"superfish": "~1.7.5"
