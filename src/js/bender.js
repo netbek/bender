@@ -174,14 +174,7 @@
       }
 
       var $aElm = jQuery('<a href="' + k + '">' + this.config.sitemap[k] + '</a>').on('click', function () {
-        var url = jQuery(this).attr('href');
-
-        if (false === self.config.cache) {
-          var parse = new Url(url);
-          parse.query.ts = Date.now();
-          url = parse.toString();
-        }
-
+        var url = self.setCacheQueryParam(jQuery(this).attr('href'), self.config.cache);
         $frames.attr('src', url);
         return false;
       });
@@ -196,13 +189,36 @@
 
     if (len) {
       jQuery('li.sitemap', $sfElm).append($listElm);
-      $frames.attr('src', this.config.firstUrl);
+      $frames.attr('src', this.setCacheQueryParam(this.config.firstUrl, this.config.cache));
     }
 
     $sfElm.removeClass('hidden').superfish({
       delay: 100,
       speed: 100
     });
+  };
+
+  /**
+   * Sets value of cache query string parameter.
+   *
+   * @param {String} url
+   * @param {mixed} cache
+   * @returns {String}
+   */
+  Bender.prototype.setCacheQueryParam = function (url, cache) {
+    var value;
+
+    if (false === cache) {
+      value = Date.now();
+    }
+    else {
+      return url;
+    }
+
+    var parse = new Url(url);
+    parse.query.ts = value;
+
+    return parse.toString();
   };
 
   window.bender = new Bender();
