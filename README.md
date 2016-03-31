@@ -25,7 +25,9 @@ var benderConfig = {
 	sitemapUrl: 'http://example.com/sitemap.xml',
 	sitemapBaseUrl: 'http://example.com',
 	baseUrl: '',
-	//
+	// Optional
+  cache: false, // Cache busting
+  // Required
 	screens: [
 		'320-480',
 		'768-1024',

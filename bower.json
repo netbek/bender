@@ -1,31 +1,32 @@
 {
-	"name": "bender",
-	"version": "0.0.1",
-	"description": "Responsive design tester",
-	"homepage": "https://github.com/netbek/bender",
-	"author": {
-		"name": "Hein Bekker",
-		"email": "hein@netbek.co.za",
-		"url": "http://netbek.co.za"
-	},
-	"license": {
-		"type": "AGPLv3",
-		"url": "http://www.gnu.org/licenses/agpl-3.0.txt"
-	},
-	"ignore": [
-		"bower_components",
-		"node_modules",
-		"test",
-		"tests",
-		"vendor",
-		"src"
-	],
-	"dependencies": {
-		"jquery": "~2.1.3",
-		"jquery-hoverIntent": "~1.8.1",
-		"modernizr": "https://modernizr.com/download?setclasses",
-		"nb-foundation": "https://github.com/netbek/nb-foundation.git#master",
-		"respond": "1.4.2",
-		"superfish": "~1.7.5"
-	}
+  "name": "bender",
+  "version": "0.0.1",
+  "description": "Responsive design tester",
+  "homepage": "https://github.com/netbek/bender",
+  "author": {
+    "name": "Hein Bekker",
+    "email": "hein@netbek.co.za",
+    "url": "http://netbek.co.za"
+  },
+  "license": {
+    "type": "AGPLv3",
+    "url": "http://www.gnu.org/licenses/agpl-3.0.txt"
+  },
+  "ignore": [
+    "bower_components",
+    "node_modules",
+    "test",
+    "tests",
+    "vendor",
+    "src"
+  ],
+  "dependencies": {
+    "jquery": "~2.1.3",
+    "jquery-hoverIntent": "~1.8.1",
+    "modernizr": "https://modernizr.com/download?setclasses",
+    "nb-foundation": "https://github.com/netbek/nb-foundation.git#master",
+    "respond": "1.4.2",
+    "superfish": "~1.7.5",
+    "domurl": "^2.1.0"
+  }
 }
