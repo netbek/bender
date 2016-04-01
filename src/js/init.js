@@ -8,7 +8,7 @@
 
 (function (window, undefined) {
 	var intv = setInterval(function () {
-		if (window.bender && window.benderConfig && window.jQuery && window.Url) {
+		if (window._ && window.bender && window.benderConfig && window.jQuery && window.Url) {
 			clearInterval(intv);
 			intv = null;
 			window.bender.init(window.benderConfig);
