@@ -23,6 +23,8 @@
 
     this.config = {};
     this.ratios = [];
+    this.url = undefined; // {String} Current URL
+    this.$frames = undefined; // {jQuery} iframe elements
 
     // Build list of recognised ratios.
     var arr = [
@@ -81,13 +83,18 @@
 
     this.flags.init = true;
 
-    this.config = jQuery.extend({}, {
+    var defaultOptions = {
+      debug: false,
       sitemap: undefined,
       sitemapUrl: undefined,
       sitemapBaseUrl: undefined,
       baseUrl: '',
+      cache: true,
+      cacheQueryParam: 'ts',
       screens: []
-    }, options);
+    };
+
+    _.defaults(this.config, options, defaultOptions);
 
     // Append iframes.
     var $ul = jQuery('#frames > ul');
@@ -101,11 +108,13 @@
     }
     $ul.append(html);
 
-    if (this.config.sitemap !== undefined) {
+    this.$frames = jQuery('iframe');
+
+    if (!_.isNil(this.config.sitemap)) {
       // Load frames.
       this.loadFrames();
     }
-    else if (this.config.sitemapUrl !== undefined) {
+    else if (!_.isNil(this.config.sitemapUrl)) {
       // Load sitemap.
       jQuery.ajax({
         cache: false,
@@ -152,9 +161,8 @@
     }
 
     var self = this;
-    var $frames = jQuery('iframe');
-    var $sfElm = jQuery('#menu');
-    var $listElm = jQuery('<ul />');
+    var $sf = jQuery('#menu');
+    var $list = jQuery('<ul />');
     var keys = [], k, i, len;
 
     for (k in this.config.sitemap) {
@@ -169,33 +177,93 @@
     for (i = 0; i < len; i++) {
       k = keys[i];
 
-      if (this.config.firstUrl === undefined) {
+      if (_.isNil(this.config.firstUrl)) {
         this.config.firstUrl = k;
       }
 
-      var $aElm = jQuery('<a href="' + k + '">' + this.config.sitemap[k] + '</a>').on('click', function () {
-        var url = self.setCacheQueryParam(jQuery(this).attr('href'), self.config.cache);
-        $frames.attr('src', url);
-        return false;
+      var $a = jQuery('<a href="' + k + '">' + this.config.sitemap[k] + '</a>').on('click.bender', function (e) {
+        self.setUrl(jQuery(this).attr('href'));
+        e.preventDefault();
       });
-      var $itemElm = jQuery('<li />');
-      $itemElm.append($aElm);
-      $listElm.append($itemElm);
+      var $item = jQuery('<li />');
+      $item.append($a);
+      $list.append($item);
     }
 
-    jQuery('a[href="#"]', $sfElm).on('click', function () {
-      return false;
+    jQuery('a[href="#"]', $sf).on('click.bender', function (e) {
+      e.preventDefault();
     });
 
     if (len) {
-      jQuery('li.sitemap', $sfElm).append($listElm);
-      $frames.attr('src', this.setCacheQueryParam(this.config.firstUrl, this.config.cache));
+      jQuery('li.sitemap', $sf).append($list);
+      self.setUrl(this.config.firstUrl);
     }
 
-    $sfElm.removeClass('hidden').superfish({
+    $sf.removeClass('hidden').superfish({
       delay: 100,
       speed: 100
     });
+  };
+
+  /**
+   *
+   * @param {String} url
+   */
+  Bender.prototype.setUrl = function (url) {
+    if (!this.flags.init) {
+      return;
+    }
+
+    if (_.isNil(url)) {
+      throw new Error('`url` is required');
+    }
+
+    // Whether to force a reload of iframes (used for cache busting).
+    var reload = (false === this.config.cache);
+
+    // Set current URL.
+    this.url = this.setCacheQueryParam(url, this.config.cache);
+
+    if (reload) {
+      // Unbind previous binding that might not have been removed because the window did not finish loading.
+      this.$frames.off('load.bender');
+      // On load, force a reload of the iframe to reload CSS and JS.
+      this.$frames.on('load.bender', function () {
+        jQuery(this).off('load.bender');
+        this.contentWindow.location.reload(true);
+      });
+    }
+
+    // Load URL in frames.
+    this.$frames.attr('src', this.url);
+  };
+
+  /**
+   *
+   * @param {String} a
+   * @param {String} b
+   * @returns {Boolean}
+   */
+  Bender.prototype.isEqualUrl = function (a, b) {
+    var aCompare = this.removeCacheQueryParam(a);
+    var bCompare = this.removeCacheQueryParam(b);
+
+    return _.isEqual(aCompare, bCompare);
+  };
+
+  /**
+   *
+   * @param {String} url
+   * @returns {Url}
+   */
+  Bender.prototype.removeCacheQueryParam = function (url) {
+    var parse = new Url(url);
+
+    if (!_.isFunction(parse.query[this.config.cacheQueryParam])) {
+      delete parse.query[this.config.cacheQueryParam];
+    }
+
+    return parse;
   };
 
   /**
@@ -216,7 +284,7 @@
     }
 
     var parse = new Url(url);
-    parse.query.ts = value;
+    parse.query[this.config.cacheQueryParam] = value;
 
     return parse.toString();
   };
@@ -235,7 +303,7 @@
 
 (function (window, undefined) {
 	var intv = setInterval(function () {
-		if (window.bender && window.benderConfig && window.jQuery && window.Url) {
+		if (window._ && window.bender && window.benderConfig && window.jQuery && window.Url) {
 			clearInterval(intv);
 			intv = null;
 			window.bender.init(window.benderConfig);

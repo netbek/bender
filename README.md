@@ -26,7 +26,10 @@ var benderConfig = {
 	sitemapBaseUrl: 'http://example.com',
 	baseUrl: '',
 	// Optional
-  cache: false, // Cache busting
+  cache: false, // Cache busting.
+  cacheQueryParam: 'ts', // Name of query string parameter used for cache busting.
+  debug: false,
+  firstUrl: '', // Initial URL to load. Defaults to first URL in sitemap,
   // Required
 	screens: [
 		'320-480',

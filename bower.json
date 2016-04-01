@@ -27,6 +27,7 @@
     "nb-foundation": "https://github.com/netbek/nb-foundation.git#master",
     "respond": "1.4.2",
     "superfish": "~1.7.5",
-    "domurl": "^2.1.0"
+    "domurl": "^2.1.0",
+    "lodash": "^4.7.0"
   }
 }
