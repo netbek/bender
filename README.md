@@ -4,13 +4,24 @@ Responsive design tester
 
 ## Installation
 
-Install bower:
+### Step 1
 
-`npm install -g bower`
+Install global dependencies:
 
-Install dependencies:
+```
+sudo npm install -g gulp-cli bower
+```
 
-`bower install`
+### Step 2
+
+Install local dependencies:
+
+```
+cd /path/to/repository
+npm install
+```
+
+### Step 3
 
 Create `config.js`
 
@@ -44,15 +55,3 @@ var benderConfig = {
 ## Usage
 
 Open `index.html` in web browser
-
-## Building from source
-
-Install grunt and other dependencies:
-
-`npm install -g grunt-cli`
-
-`npm install`
-
-Run grunt to build:
-
-`grunt`

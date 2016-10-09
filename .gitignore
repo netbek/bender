@@ -1,27 +1,21 @@
-# Patch/diff artifacts
-*.patch
-*.diff
+.sass-cache
+*.bak
 *.orig
-*.rej
-interdiff*.txt
-# emacs artifacts
-*~
-\#*\#
-# VI swap file
-*.swp
-# Hidden files
-.DS*
-.project
-# Windows links
-*.lnk
-# Temporary files
-tmp*
-# IDE project directory
+Gemfile.lock
+bower_components
+node_modules
+/temp
+connectRest*.log
+
+# IDE files
 nbproject
 .idea
-# Node.js modules directory
-node_modules/
-# Bower components directory
-bower_components/
-# Config
-config.js
+.netbeans.xml
+
+# Dist
+/css/
+/js/
+
+# Per-user config
+/config.js
+/gulp-config-user.js
