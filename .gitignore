@@ -12,10 +12,6 @@ nbproject
 .idea
 .netbeans.xml
 
-# Dist
-/css/
-/js/
-
 # Per-user config
 /config.js
 /gulp-config-user.js
