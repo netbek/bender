@@ -28,13 +28,11 @@ module.exports = {
   },
   'dist': {
     'css': 'css/',
-    'js': 'js/',
-    'www': 'www/'
+    'js': 'js/'
   },
   'src': {
     'css': 'src/css/',
-    'js': 'src/js/',
-    'www': 'src/www/'
+    'js': 'src/js/'
   },
   'watchTasks': [
     //
@@ -53,15 +51,6 @@ module.exports = {
       ],
       tasks: [
         'js'
-      ]
-    },
-    //
-    {
-      files: [
-        'src/www/**/*.html'
-      ],
-      tasks: [
-        'www'
       ]
     }
   ],

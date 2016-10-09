@@ -115,7 +115,7 @@ gulp.task('clean', function () {
 
 gulp.task('css', function (cb) {
   gulp
-    .src([config.src.css + '**/*'])
+    .src([config.src.css + '**/*.scss'])
     .pipe(sass(config.css.params).on('error', sass.logError))
     .pipe(autoprefixer(config.autoprefixer))
     .pipe(gulp.dest(config.dist.css))
@@ -131,7 +131,7 @@ gulp.task('css', function (cb) {
 
 gulp.task('js', function (cb) {
   gulp
-    .src([config.src.js + '**/*'])
+    .src([config.src.js + '**/*.js'])
     .pipe(gulp.dest(config.dist.js))
     .pipe(rename({
       suffix: '.min'
