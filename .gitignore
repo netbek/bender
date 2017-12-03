@@ -14,4 +14,4 @@ nbproject
 
 # Per-user config
 /config.js
-/gulp-config-user.js
+/gulp.user.config.js
