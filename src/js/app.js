@@ -1,3 +1,3 @@
 import Bender from './Bender';
 
-window.Bender = new Bender();
+new Bender().init(window.benderConfig);

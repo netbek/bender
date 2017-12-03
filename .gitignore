@@ -13,5 +13,5 @@ nbproject
 .netbeans.xml
 
 # Per-user config
-/config.js
+/bender.config.js
 /gulp.user.config.js

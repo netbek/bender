@@ -2387,7 +2387,7 @@ var _Bender2 = _interopRequireDefault(_Bender);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-window.Bender = new _Bender2.default();
+new _Bender2.default().init(window.benderConfig);
 
 /***/ }),
 
