@@ -2068,9 +2068,6 @@ module.exports = function(module) {
 /***/ "./Bender.js":
 /***/ (function(module, exports, __webpack_require__) {
 
-"use strict";
-
-
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
@@ -2113,7 +2110,7 @@ var _getRatioName = __webpack_require__("./getRatioName.js");
 
 var _getRatioName2 = _interopRequireDefault(_getRatioName);
 
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
@@ -2138,93 +2135,105 @@ var Bender = function () {
 
   _createClass(Bender, [{
     key: 'init',
-    value: function init(options) {
-      if (this.flags.init) {
+    value: function () {
+      function init(options) {
+        if (this.flags.init) {
+          return this;
+        }
+
+        this.flags.init = true;
+
+        var defaultOptions = {
+          debug: false,
+          sitemap: undefined,
+          sitemapUrl: undefined,
+          sitemapBaseUrl: undefined,
+          baseUrl: '',
+          cache: true,
+          cacheQueryParam: 'ts',
+          screens: []
+        };
+
+        this.config = (0, _defaults3['default'])({}, options, defaultOptions);
+
+        var self = this;
+        var hasSitemap = !(0, _isNil3['default'])(this.config.sitemap);
+        var hasSitemapUrl = !(0, _isNil3['default'])(this.config.sitemapUrl);
+
+        if (!hasSitemap && !hasSitemapUrl) {
+          throw new Error('Either `sitemap` or `sitemapUrl` should be defined in config.');
+        }
+
+        // Append iframes.
+        var html = this.config.screens.reduce(function (result, screen) {
+          var dims = screen.split('-');
+          var ratioName = (0, _getRatioName2['default'])(dims[0], dims[1]);
+
+          return result + '<li><p>' + dims[0] + ' x ' + dims[1] + (ratioName ? ', ' + ratioName : '') + '</p><iframe class="f f-' + dims[0] + '-' + dims[1] + '"></iframe></li>';
+        }, '');
+
+        jQuery('#frames > ul').append(html);
+
+        this.$frames = jQuery('iframe');
+
+        if (hasSitemap) {
+          // Load frames.
+          return this.loadFrames();
+        }
+
+        // Load sitemap.
+        jQuery.ajax({
+          cache: false,
+          method: 'GET',
+          dataType: 'xml',
+          url: this.config.sitemapUrl,
+          error: function () {
+            function error() {
+              throw new Error('Could not load sitemap.');
+            }
+
+            return error;
+          }(),
+          success: function () {
+            function success(data) {
+              var entries = jQuery(data).find('url').filter(function () {
+                var url = jQuery(this).find('loc').text();
+
+                return url.substr(0, self.config.sitemapBaseUrl.length) === self.config.sitemapBaseUrl;
+              }).toArray().reduce(function (result, value) {
+                var url = jQuery(value).find('loc').text();
+
+                var path = url.substr(self.config.sitemapBaseUrl.length);
+                var title = path === '' ? '/' : path;
+
+                return result.concat({
+                  url: self.config.baseUrl + path,
+                  title: title
+                });
+              }, []);
+
+              var urls = entries.map(function (v) {
+                return v.url;
+              });
+              var titles = entries.map(function (v) {
+                return v.title;
+              });
+
+              self.config.sitemap = (0, _zipObject3['default'])(urls, titles);
+
+              // Load frames.
+              self.loadFrames();
+            }
+
+            return success;
+          }()
+        });
+
         return this;
       }
 
-      this.flags.init = true;
-
-      var defaultOptions = {
-        debug: false,
-        sitemap: undefined,
-        sitemapUrl: undefined,
-        sitemapBaseUrl: undefined,
-        baseUrl: '',
-        cache: true,
-        cacheQueryParam: 'ts',
-        screens: []
-      };
-
-      this.config = (0, _defaults3.default)({}, options, defaultOptions);
-
-      var self = this;
-      var hasSitemap = !(0, _isNil3.default)(this.config.sitemap);
-      var hasSitemapUrl = !(0, _isNil3.default)(this.config.sitemapUrl);
-
-      if (!hasSitemap && !hasSitemapUrl) {
-        throw new Error('Either `sitemap` or `sitemapUrl` should be defined in config.');
-      }
-
-      // Append iframes.
-      var html = this.config.screens.reduce(function (result, screen) {
-        var dims = screen.split('-');
-        var ratioName = (0, _getRatioName2.default)(dims[0], dims[1]);
-
-        return result + '<li><p>' + dims[0] + ' x ' + dims[1] + (ratioName ? ', ' + ratioName : '') + '</p><iframe class="f f-' + dims[0] + '-' + dims[1] + '"></iframe></li>';
-      }, '');
-
-      jQuery('#frames > ul').append(html);
-
-      this.$frames = jQuery('iframe');
-
-      if (hasSitemap) {
-        // Load frames.
-        return this.loadFrames();
-      }
-
-      // Load sitemap.
-      jQuery.ajax({
-        cache: false,
-        method: 'GET',
-        dataType: 'xml',
-        url: this.config.sitemapUrl,
-        error: function error() {
-          throw new Error('Could not load sitemap.');
-        },
-        success: function success(data) {
-          var entries = jQuery(data).find('url').filter(function () {
-            var url = jQuery(this).find('loc').text();
-
-            return url.substr(0, self.config.sitemapBaseUrl.length) === self.config.sitemapBaseUrl;
-          }).toArray().reduce(function (result, value) {
-            var url = jQuery(value).find('loc').text();
-
-            var path = url.substr(self.config.sitemapBaseUrl.length);
-            var title = path === '' ? '/' : path;
-
-            return result.concat({
-              url: self.config.baseUrl + path,
-              title: title
-            });
-          }, []);
-
-          var urls = entries.map(function (v) {
-            return v.url;
-          });
-          var titles = entries.map(function (v) {
-            return v.title;
-          });
-
-          self.config.sitemap = (0, _zipObject3.default)(urls, titles);
-
-          // Load frames.
-          self.loadFrames();
-        }
-      });
-
-      return this;
-    }
+      return init;
+    }()
 
     /**
      *
@@ -2232,49 +2241,53 @@ var Bender = function () {
 
   }, {
     key: 'loadFrames',
-    value: function loadFrames() {
-      if (!this.flags.init) {
+    value: function () {
+      function loadFrames() {
+        if (!this.flags.init) {
+          return this;
+        }
+
+        var self = this;
+        var $sf = jQuery('#menu');
+        var $list = jQuery('<ul />');
+        var keys = (0, _keys3['default'])(this.config.sitemap);
+
+        keys.sort();
+
+        if ((0, _isNil3['default'])(this.config.firstUrl)) {
+          this.config.firstUrl = (0, _first3['default'])(keys);
+        }
+
+        keys.forEach(function (k) {
+          var $a = jQuery('<a href="' + k + '">' + self.config.sitemap[k] + '</a>').on('click.bender', function (e) {
+            e.preventDefault();
+            self.setUrl(jQuery(this).attr('href'));
+          });
+          var $item = jQuery('<li />');
+
+          $item.append($a);
+          $list.append($item);
+        });
+
+        jQuery('a[href="#"]', $sf).on('click.bender', function (e) {
+          e.preventDefault();
+        });
+
+        if (keys.length) {
+          jQuery('li.sitemap', $sf).append($list);
+          this.setUrl(this.config.firstUrl);
+        }
+
+        $sf.removeClass('hidden').superfish({
+          delay: 100,
+          speed: 100
+        });
+
         return this;
       }
 
-      var self = this;
-      var $sf = jQuery('#menu');
-      var $list = jQuery('<ul />');
-      var keys = (0, _keys3.default)(this.config.sitemap);
-
-      keys.sort();
-
-      if ((0, _isNil3.default)(this.config.firstUrl)) {
-        this.config.firstUrl = (0, _first3.default)(keys);
-      }
-
-      keys.forEach(function (k) {
-        var $a = jQuery('<a href="' + k + '">' + self.config.sitemap[k] + '</a>').on('click.bender', function (e) {
-          e.preventDefault();
-          self.setUrl(jQuery(this).attr('href'));
-        });
-        var $item = jQuery('<li />');
-
-        $item.append($a);
-        $list.append($item);
-      });
-
-      jQuery('a[href="#"]', $sf).on('click.bender', function (e) {
-        e.preventDefault();
-      });
-
-      if (keys.length) {
-        jQuery('li.sitemap', $sf).append($list);
-        this.setUrl(this.config.firstUrl);
-      }
-
-      $sf.removeClass('hidden').superfish({
-        delay: 100,
-        speed: 100
-      });
-
-      return this;
-    }
+      return loadFrames;
+    }()
 
     /**
      *
@@ -2283,34 +2296,38 @@ var Bender = function () {
 
   }, {
     key: 'setUrl',
-    value: function setUrl(url) {
-      if (!this.flags.init) {
-        return;
+    value: function () {
+      function setUrl(url) {
+        if (!this.flags.init) {
+          return;
+        }
+
+        if ((0, _isNil3['default'])(url)) {
+          throw new Error('`url` is required');
+        }
+
+        // Whether to force a reload of iframes (used for cache busting).
+        var reload = this.config.cache === false;
+
+        // Set current URL.
+        this.url = this.setCacheQueryParam(url, this.config.cache);
+
+        if (reload) {
+          // Unbind previous binding that might not have been removed because the window did not finish loading.
+          this.$frames.off('load.bender');
+          // On load, force a reload of the iframe to reload CSS and JS.
+          this.$frames.on('load.bender', function () {
+            jQuery(this).off('load.bender');
+            this.contentWindow.location.reload(true);
+          });
+        }
+
+        // Load URL in frames.
+        this.$frames.attr('src', this.url);
       }
 
-      if ((0, _isNil3.default)(url)) {
-        throw new Error('`url` is required');
-      }
-
-      // Whether to force a reload of iframes (used for cache busting).
-      var reload = this.config.cache === false;
-
-      // Set current URL.
-      this.url = this.setCacheQueryParam(url, this.config.cache);
-
-      if (reload) {
-        // Unbind previous binding that might not have been removed because the window did not finish loading.
-        this.$frames.off('load.bender');
-        // On load, force a reload of the iframe to reload CSS and JS.
-        this.$frames.on('load.bender', function () {
-          jQuery(this).off('load.bender');
-          this.contentWindow.location.reload(true);
-        });
-      }
-
-      // Load URL in frames.
-      this.$frames.attr('src', this.url);
-    }
+      return setUrl;
+    }()
 
     /**
      *
@@ -2321,12 +2338,16 @@ var Bender = function () {
 
   }, {
     key: 'isEqualUrl',
-    value: function isEqualUrl(a, b) {
-      var aCompare = this.removeCacheQueryParam(a);
-      var bCompare = this.removeCacheQueryParam(b);
+    value: function () {
+      function isEqualUrl(a, b) {
+        var aCompare = this.removeCacheQueryParam(a);
+        var bCompare = this.removeCacheQueryParam(b);
 
-      return (0, _isEqual3.default)(aCompare, bCompare);
-    }
+        return (0, _isEqual3['default'])(aCompare, bCompare);
+      }
+
+      return isEqualUrl;
+    }()
 
     /**
      *
@@ -2336,15 +2357,19 @@ var Bender = function () {
 
   }, {
     key: 'removeCacheQueryParam',
-    value: function removeCacheQueryParam(url) {
-      var parse = new _domurl2.default(url);
+    value: function () {
+      function removeCacheQueryParam(url) {
+        var parse = new _domurl2['default'](url);
 
-      if (!(0, _isFunction3.default)(parse.query[this.config.cacheQueryParam])) {
-        delete parse.query[this.config.cacheQueryParam];
+        if (!(0, _isFunction3['default'])(parse.query[this.config.cacheQueryParam])) {
+          delete parse.query[this.config.cacheQueryParam];
+        }
+
+        return parse;
       }
 
-      return parse;
-    }
+      return removeCacheQueryParam;
+    }()
 
     /**
      * Sets value of cache query string parameter.
@@ -2356,46 +2381,44 @@ var Bender = function () {
 
   }, {
     key: 'setCacheQueryParam',
-    value: function setCacheQueryParam(url, cache) {
-      if (cache !== false) {
-        return url;
+    value: function () {
+      function setCacheQueryParam(url, cache) {
+        if (cache !== false) {
+          return url;
+        }
+
+        var parse = new _domurl2['default'](url);
+        parse.query[this.config.cacheQueryParam] = Date.now();
+
+        return parse.toString();
       }
 
-      var parse = new _domurl2.default(url);
-      parse.query[this.config.cacheQueryParam] = Date.now();
-
-      return parse.toString();
-    }
+      return setCacheQueryParam;
+    }()
   }]);
 
   return Bender;
 }();
 
-exports.default = Bender;
+exports['default'] = Bender;
 
 /***/ }),
 
 /***/ "./app.js":
 /***/ (function(module, exports, __webpack_require__) {
 
-"use strict";
-
-
 var _Bender = __webpack_require__("./Bender.js");
 
 var _Bender2 = _interopRequireDefault(_Bender);
 
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
 
-new _Bender2.default().init(window.benderConfig);
+new _Bender2['default']().init(window.benderConfig);
 
 /***/ }),
 
 /***/ "./getRatioName.js":
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
+/***/ (function(module, exports) {
 
 Object.defineProperty(exports, "__esModule", {
   value: true
@@ -2437,7 +2460,7 @@ function getRatioName(width, height) {
   return matches.length ? matches[0].name : undefined;
 }
 
-exports.default = getRatioName;
+exports['default'] = getRatioName;
 
 /***/ }),
 
